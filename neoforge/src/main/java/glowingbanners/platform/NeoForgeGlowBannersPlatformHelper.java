@@ -18,12 +18,12 @@ public class NeoForgeGlowBannersPlatformHelper implements IGlowBannersPlatformHe
     }
 
     public BannerGlowAttachment getData(BannerBlockEntity blockEntity) {
-        return blockEntity.getLevel().getData(GlowBannersAttachmentTypes.BANNER_GLOW).getAttachment();
+        return blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW);
     }
 
     @Override
     public void syncBlockEntity(BannerBlockEntity blockEntity) {
-        PacketDistributor.TRACKING_CHUNK.with(blockEntity.getLevel().getChunkAt(blockEntity.getBlockPos())).send(new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW).getAttachment()));
+        PacketDistributor.TRACKING_CHUNK.with(blockEntity.getLevel().getChunkAt(blockEntity.getBlockPos())).send(new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW)));
         blockEntity.invalidateCapabilities();
     }
 

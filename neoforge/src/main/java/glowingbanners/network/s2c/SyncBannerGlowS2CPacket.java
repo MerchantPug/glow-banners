@@ -42,7 +42,7 @@ public record SyncBannerGlowS2CPacket(BlockPos pos, BannerGlowAttachment attachm
                         if (blockEntity == null) {
                             return;
                         }
-                        blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW).getAttachment().setFromOther(packet.attachment());
+                        blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW).setFromOther(packet.attachment());
                     });
                 }
         );
