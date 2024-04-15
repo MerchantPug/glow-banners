@@ -3,28 +3,19 @@ package me.ultrusmods.glowingbanners.attachment;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class BannerGlowAttachment {
     public static final ResourceLocation ID = GlowBannersMod.asResource("banner_glow");
     public static final Codec<BannerGlowAttachment> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            Codec.BOOL.fieldOf("all_glow").forGetter(BannerGlowAttachment::shouldAllGlow),
-            Codec.list(Codec.INT).optionalFieldOf("glowing_layers", List.of()).xmap(Collections::unmodifiableCollection, collection -> collection.stream().toList()).forGetter(BannerGlowAttachment::getGlowingLayers)
+            Codec.BOOL.optionalFieldOf("all_glow", false).forGetter(BannerGlowAttachment::shouldAllGlow),
+            Codec.list(Codec.INT).optionalFieldOf("glowing_layers", List.of()).xmap(Collections::unmodifiableCollection, List::copyOf).forGetter(BannerGlowAttachment::getGlowingLayers)
     ).apply(inst, BannerGlowAttachment::new));
 
     private boolean allGlow;
