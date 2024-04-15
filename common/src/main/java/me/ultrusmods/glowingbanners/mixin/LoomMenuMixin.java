@@ -1,7 +1,7 @@
 package me.ultrusmods.glowingbanners.mixin;
 
 import com.google.common.collect.ImmutableList;
-import me.ultrusmods.glowingbanners.attachment.IBannerGlowData;
+import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
 import net.minecraft.core.Holder;
 import net.minecraft.world.Container;
@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.LoomMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
@@ -62,7 +63,7 @@ public abstract class LoomMenuMixin extends AbstractContainerMenu {
                 return;
             }
 
-            IBannerGlowData resultData = IGlowBannersPlatformHelper.INSTANCE.getData(result);
+            BannerGlowAttachment resultData = IGlowBannersPlatformHelper.INSTANCE.getData(result);
             if (hasGlowInkSac)
                 resultData.addGlowToLayer(lastLayer);
             else if (resultData.shouldAllGlow()) {

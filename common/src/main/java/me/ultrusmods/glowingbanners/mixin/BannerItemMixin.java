@@ -1,7 +1,6 @@
 package me.ultrusmods.glowingbanners.mixin;
 
-import me.ultrusmods.glowingbanners.GlowBannersMod;
-import me.ultrusmods.glowingbanners.attachment.IBannerGlowData;
+import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +22,7 @@ import java.util.List;
 public class BannerItemMixin {
 
     @Unique
-    private static IBannerGlowData glowBanners$capturedGlowData;
+    private static BannerGlowAttachment glowBanners$capturedGlowData;
     @Unique
     private static int glowBanners$capturedIndex;
 

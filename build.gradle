@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.4-SNAPSHOT' apply(false)
+	id 'fabric-loom' version '1.5-SNAPSHOT' apply(false)
 	id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT' apply(false)
 	id 'org.spongepowered.mixin' version '0.7-SNAPSHOT' apply(false)
 	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
@@ -63,8 +63,7 @@ subprojects {
 				"mod_name": mod_name,
 				"mod_author": mod_author,
 				"neoforge_loader_version_range": libs.versions.neoforge.loaderrange.get(),
-				"minecraft_version_range": libs.versions.neoforge.minecraftrange.get(),
-				"pack_version": libs.versions.pack.get()
+				"minecraft_version_range": libs.versions.neoforge.minecraftrange.get()
 		]
 
 		filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {

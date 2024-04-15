@@ -1,6 +1,6 @@
 package me.ultrusmods.glowingbanners;
 
-import me.ultrusmods.glowingbanners.attachment.IBannerGlowData;
+import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
 import me.ultrusmods.glowingbanners.mixin.AbstractCauldronBlockAccessor;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -30,7 +30,7 @@ public class GlowBannersMod {
     public static final String MOD_NAME = "Glow Banners";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static IBannerGlowData BANNER_RENDERER_CONTEXT;
+    public static BannerGlowAttachment BANNER_RENDERER_CONTEXT;
 
     public static InteractionResult interactWithBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
         BlockPos pos = result.getBlockPos();
@@ -54,31 +54,33 @@ public class GlowBannersMod {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof BannerBlockEntity bannerBlockEntity) {
-            IBannerGlowData data = IGlowBannersPlatformHelper.INSTANCE.getData(bannerBlockEntity);
+            BannerGlowAttachment data = IGlowBannersPlatformHelper.INSTANCE.getData(bannerBlockEntity);
 
-            if (level.isClientSide()) {
-                return ((hasGlowInkSac && !data.shouldAllGlow() || hasInkSac && (data.shouldAllGlow() || !data.getGlowingLayers().isEmpty())) && player.getAbilities().mayBuild) ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
-            } else {
-                if (!hasGlowInkSac && !hasInkSac) {
-                    return InteractionResult.PASS;
-                }
-                if (hasGlowInkSac && data.shouldAllGlow() || hasInkSac && !data.shouldAllGlow() && data.getGlowingLayers().isEmpty()) {
-                    return InteractionResult.PASS;
-                }
-                level.playSound(null, result.getBlockPos(), hasInkSac ? SoundEvents.INK_SAC_USE : SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+            if (data != null) {
+                if (level.isClientSide()) {
+                    return ((hasGlowInkSac && !data.shouldAllGlow() || hasInkSac && (data.shouldAllGlow() || !data.getGlowingLayers().isEmpty())) && player.getAbilities().mayBuild) ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+                } else {
+                    if (!hasGlowInkSac && !hasInkSac) {
+                        return InteractionResult.PASS;
+                    }
+                    if (hasGlowInkSac && data.shouldAllGlow() || hasInkSac && !data.shouldAllGlow() && data.getGlowingLayers().isEmpty()) {
+                        return InteractionResult.PASS;
+                    }
+                    level.playSound(null, result.getBlockPos(), hasInkSac ? SoundEvents.INK_SAC_USE : SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
 
-                if (player instanceof ServerPlayer) {
-                    CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, pos, heldStack);
-                }
+                    if (player instanceof ServerPlayer) {
+                        CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, pos, heldStack);
+                    }
 
-                data.clearGlowingLayers();
-                data.setAllGlow(hasGlowInkSac);
-                data.sync(bannerBlockEntity);
+                    data.clearGlowingLayers();
+                    data.setAllGlow(hasGlowInkSac);
+                    IGlowBannersPlatformHelper.INSTANCE.syncBlockEntity(bannerBlockEntity);
 
-                if (!player.getAbilities().instabuild) {
-                    heldStack.shrink(1);
+                    if (!player.getAbilities().instabuild) {
+                        heldStack.shrink(1);
+                    }
+                    return InteractionResult.SUCCESS;
                 }
-                return InteractionResult.SUCCESS;
             }
         }
 
@@ -90,10 +92,10 @@ public class GlowBannersMod {
         ItemStack stack = player.getItemInHand(hand);
         BlockPos pos = result.getBlockPos();
 
-        IBannerGlowData data = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
+        BannerGlowAttachment data = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
         if (stack.getItem() instanceof BannerItem && data != null) {
             ItemStack itemStack = stack.copy();
-            IBannerGlowData copiedData = IGlowBannersPlatformHelper.INSTANCE.getData(itemStack);
+            BannerGlowAttachment copiedData = IGlowBannersPlatformHelper.INSTANCE.getData(itemStack);
 
             boolean updated = false;
             if (level.isClientSide()) {

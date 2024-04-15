@@ -3,7 +3,7 @@ package me.ultrusmods.glowingbanners.loot;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
-import me.ultrusmods.glowingbanners.attachment.IBannerGlowData;
+import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -36,8 +36,8 @@ public class SetBannerGlowFunction extends LootItemConditionalFunction {
     protected ItemStack run(ItemStack stack, LootContext lootContext) {
         BlockEntity blockEntity = lootContext.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof BannerBlockEntity bannerBlockEntity) {
-            IBannerGlowData prevData = IGlowBannersPlatformHelper.INSTANCE.getData(bannerBlockEntity);
-            IBannerGlowData glowData = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
+            BannerGlowAttachment prevData = IGlowBannersPlatformHelper.INSTANCE.getData(bannerBlockEntity);
+            BannerGlowAttachment glowData = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
             glowData.setFromOther(prevData);
         }
         return stack;

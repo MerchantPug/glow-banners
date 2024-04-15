@@ -11,6 +11,6 @@ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 public class GlowBannersClientEvents {
     @SubscribeEvent
     public static void onClientLogOut(ClientPlayerNetworkEvent.LoggingOut event) {
-        GlowBannersModNeoForge.clearItemCapCache();
+        GlowBannersModNeoForge.ModBusEvents.clearCapCache();
     }
 }

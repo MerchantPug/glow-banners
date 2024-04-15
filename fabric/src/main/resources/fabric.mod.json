@@ -25,8 +25,8 @@
     "main": [
       "me.ultrusmods.glowingbanners.GlowBannersModFabric"
     ],
-    "cardinal-components": [
-      "me.ultrusmods.glowingbanners.GlowBannersComponents"
+    "client": [
+      "me.ultrusmods.glowingbanners.client.GlowBannersModFabricClient"
     ]
   },
   "mixins": [

@@ -1,6 +1,6 @@
 package me.ultrusmods.glowingbanners.mixin;
 
-import me.ultrusmods.glowingbanners.attachment.IBannerGlowData;
+import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
@@ -20,12 +20,16 @@ public class AbstractBannerBlockMixin {
     private void glowBanners$setPlacedGlowData(Level level, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack, CallbackInfo ci) {
         if (level.isClientSide()) return;
         level.getBlockEntity(pos, BlockEntityType.BANNER).ifPresent(blockEntity -> {
-            IBannerGlowData prevData = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
-            IBannerGlowData glowData = IGlowBannersPlatformHelper.INSTANCE.getData(blockEntity);
-            glowData.setFromOther(prevData);
+            BannerGlowAttachment prevData = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
+            if (prevData != null) {
+                BannerGlowAttachment glowData = IGlowBannersPlatformHelper.INSTANCE.getData(blockEntity);
+                if (glowData != null) {
+                    glowData.setFromOther(prevData);
 
-            if (stack.getOrCreateTagElement("BlockEntityTag").contains("isGlowing") && stack.getOrCreateTagElement("BlockEntityTag").getBoolean("isGlowing")) {
-                glowData.setAllGlow(true);
+                    if (stack.getOrCreateTagElement("BlockEntityTag").contains("isGlowing") && stack.getOrCreateTagElement("BlockEntityTag").getBoolean("isGlowing")) {
+                        glowData.setAllGlow(true);
+                    }
+                }
             }
         });
     }
