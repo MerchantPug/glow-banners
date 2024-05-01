@@ -5,13 +5,14 @@
   "refmap": "glowingbanners.refmap.json",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "AbstractBannerBlockMixin",
     "AbstractCauldronBlockAccessor",
     "BannerBlockEntityMixin",
     "BannerItemMixin",
     "ItemMixin",
+    "ItemStackComponentizationFixMixin",
     "LoomMenuDyeSlotMixin",
-    "LoomMenuMixin"
+    "LoomMenuMixin",
+    "ShieldDecorationRecipeMixin"
   ],
   "client": [
     "client.BannerRendererMixin",

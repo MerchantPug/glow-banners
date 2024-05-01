@@ -1,4 +1,4 @@
-package glowingbanners.registry;
+package me.ultrusmods.glowingbanners.registry;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -8,5 +8,5 @@ import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface RegistrationCallback<T> {
-    void register(ResourceKey<? extends Registry<T>> registry, ResourceLocation id, Supplier<T> object);
+    void register(Registry<T> registry, ResourceLocation id, T object);
 }

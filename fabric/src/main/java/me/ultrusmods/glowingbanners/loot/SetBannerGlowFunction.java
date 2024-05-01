@@ -1,10 +1,12 @@
 package me.ultrusmods.glowingbanners.loot;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
-import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
-import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
+import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
+import me.ultrusmods.glowingbanners.registry.GlowBannersAttachmentTypes;
+import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
@@ -21,11 +23,11 @@ import java.util.List;
 public class SetBannerGlowFunction extends LootItemConditionalFunction {
     public static final ResourceLocation ID = GlowBannersMod.asResource("set_banner_glow");
 
-    private static final Codec<SetBannerGlowFunction> CODEC = RecordCodecBuilder.create((instance) ->
+    private static final MapCodec<SetBannerGlowFunction> CODEC = RecordCodecBuilder.mapCodec((instance) ->
             commonFields(instance)
                     .apply(instance, SetBannerGlowFunction::new)
     );
-    public static final LootItemFunctionType TYPE = new LootItemFunctionType(CODEC);
+    public static final LootItemFunctionType<SetBannerGlowFunction> TYPE = new LootItemFunctionType<>(CODEC);
 
 
     protected SetBannerGlowFunction(List<LootItemCondition> conditions) {
@@ -36,9 +38,9 @@ public class SetBannerGlowFunction extends LootItemConditionalFunction {
     protected ItemStack run(ItemStack stack, LootContext lootContext) {
         BlockEntity blockEntity = lootContext.getParamOrNull(LootContextParams.BLOCK_ENTITY);
         if (blockEntity instanceof BannerBlockEntity bannerBlockEntity) {
-            BannerGlowAttachment prevData = IGlowBannersPlatformHelper.INSTANCE.getData(bannerBlockEntity);
-            BannerGlowAttachment glowData = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
-            glowData.setFromOther(prevData);
+            BannerGlowComponent prevData = bannerBlockEntity.getAttached(GlowBannersAttachmentTypes.BANNER_GLOW);
+            if (prevData != null)
+                stack.applyComponents(DataComponentPatch.builder().set(GlowBannersDataComponents.BANNER_GLOW, prevData).build());
         }
         return stack;
     }

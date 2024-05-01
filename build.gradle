@@ -1,14 +1,14 @@
 plugins {
-	id 'fabric-loom' version '1.5-SNAPSHOT' apply(false)
+	id 'fabric-loom' version '1.6-SNAPSHOT' apply(false)
 	id 'org.spongepowered.gradle.vanilla' version '0.2.1-SNAPSHOT' apply(false)
 	id 'org.spongepowered.mixin' version '0.7-SNAPSHOT' apply(false)
-	id "me.modmuss50.mod-publish-plugin" version "0.4.5"
+	id "me.modmuss50.mod-publish-plugin" version "0.4.5" apply (false)
 }
 
 subprojects {
 	apply plugin: 'java'
 
-	java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+	java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 	java.withSourcesJar()
 	java.withJavadocJar()
 
@@ -53,20 +53,20 @@ subprojects {
 	tasks.withType(JavaCompile).configureEach {
 
 		it.options.encoding = 'UTF-8'
-		it.options.getRelease().set(17)
+		it.options.getRelease().set(21)
 	}
 
 	processResources {
 		def expandProps = [
-				"version": version,
+				"version": project.version,
 				"group": project.group, //Else we target the task's group.
 				"mod_name": mod_name,
 				"mod_author": mod_author,
-				"neoforge_loader_version_range": libs.versions.neoforge.loaderrange.get(),
-				"minecraft_version_range": libs.versions.neoforge.minecraftrange.get()
+				"neoforge_loader_version_range": libs.versions.neoforge.loader.range.get(),
+				"minecraft_version_range": libs.versions.neoforge.minecraft.range.get()
 		]
 
-		filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', '*.mixins.json']) {
+		filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {
 			expand expandProps
 		}
 		inputs.properties(expandProps)

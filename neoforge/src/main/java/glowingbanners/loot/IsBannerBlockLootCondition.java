@@ -1,6 +1,7 @@
 package glowingbanners.loot;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -11,7 +12,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 public class IsBannerBlockLootCondition implements LootItemCondition {
     public static final ResourceLocation ID = GlowBannersMod.asResource("is_banner_block");
     private static final IsBannerBlockLootCondition INSTANCE = new IsBannerBlockLootCondition();
-    public static final Codec<IsBannerBlockLootCondition> CODEC = Codec.unit(INSTANCE);
+    public static final MapCodec<IsBannerBlockLootCondition> CODEC = MapCodec.unit(INSTANCE);
 
     @Override
     public LootItemConditionType getType() {

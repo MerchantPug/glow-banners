@@ -1,13 +1,13 @@
 package glowingbanners.loot;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import glowingbanners.registry.GlowBannersAttachmentTypes;
-import glowingbanners.registry.GlowBannersCapabilities;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
-import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
-import me.ultrusmods.glowingbanners.attachment.capi.BannerGlowItemCapi;
+import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
+import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BannerItem;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class GlowBannerLootModifier extends LootModifier {
     public static final ResourceLocation ID = GlowBannersMod.asResource("set_banner_glow");
-    public static final Codec<GlowBannerLootModifier> CODEC = RecordCodecBuilder.create(inst ->
+    public static final MapCodec<GlowBannerLootModifier> CODEC = RecordCodecBuilder.mapCodec(inst ->
             LootModifier.codecStart(inst).apply(inst, GlowBannerLootModifier::new));
 
     protected GlowBannerLootModifier(LootItemCondition[] conditionsIn) {
@@ -34,17 +34,16 @@ public class GlowBannerLootModifier extends LootModifier {
         objectArrayList.stream().filter(itemStack -> itemStack.getItem() instanceof BannerItem).forEach(stack -> {
             BlockEntity blockEntity = lootContext.getParamOrNull(LootContextParams.BLOCK_ENTITY);
             if (blockEntity instanceof BannerBlockEntity) {
-                BannerGlowAttachment blockEntityData = blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW);
-                BannerGlowItemCapi stackData = stack.getCapability(GlowBannersCapabilities.BANNER_GLOW_ITEM);
-                if (stackData != null)
-                    stackData.setFromOther(blockEntityData);
+                BannerGlowComponent blockEntityData = blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW);
+                if (blockEntityData != null)
+                    stack.applyComponents(DataComponentPatch.builder().set(GlowBannersDataComponents.BANNER_GLOW, blockEntityData).build());
             }
         });
         return objectArrayList;
     }
 
     @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
+    public MapCodec<? extends IGlobalLootModifier> codec() {
         return CODEC;
     }
 }

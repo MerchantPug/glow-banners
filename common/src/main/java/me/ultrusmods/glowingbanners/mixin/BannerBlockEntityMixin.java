@@ -1,48 +1,52 @@
 package me.ultrusmods.glowingbanners.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
-import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
+import me.ultrusmods.glowingbanners.GlowBannersMod;
+import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
+import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(BannerBlockEntity.class)
-public class BannerBlockEntityMixin {
-    @Inject(method = "load", at = @At("TAIL"))
-    private void glowBanners$convertGlowingNbt(CompoundTag tag, CallbackInfo ci) {
+public class BannerBlockEntityMixin extends BlockEntity {
+    public BannerBlockEntityMixin(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
+        super(entityType, pos, state);
+    }
+
+    @Inject(method = "loadAdditional", at = @At("TAIL"))
+    private void glowBanners$convertGlowingNbt(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
         if (tag.contains("isGlowing", Tag.TAG_BYTE) && tag.getBoolean("isGlowing")) {
-            BannerGlowAttachment data = IGlowBannersPlatformHelper.INSTANCE.getData((BannerBlockEntity)(Object)this);
-            data.setAllGlow(true);
-            IGlowBannersPlatformHelper.INSTANCE.syncBlockEntity((BannerBlockEntity)(Object)this);
+            tag.remove("isGlowing");
+            BannerGlowComponent component = GlowBannersMod.getHelper().getOrCreateData((BannerBlockEntity)(Object)this);
+            component.setAllGlow(true);
+            this.setChanged();
         }
     }
 
-    @Inject(method = "fromItem(Lnet/minecraft/world/item/ItemStack;)V", at = @At("TAIL"))
-    private void glowBanners$setGlowDataFromStack(ItemStack stack, CallbackInfo ci) {
-        BannerGlowAttachment prevData = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
-        if (prevData != null) {
-            BannerGlowAttachment glowData = IGlowBannersPlatformHelper.INSTANCE.getData((BannerBlockEntity)(Object)this);
-            if (glowData != null) {
-                glowData.setFromOther(prevData);
-            }
-        }
+    @Inject(method = "applyImplicitComponents", at = @At("TAIL"))
+    private void glowBanners$applyGlowComponent(DataComponentInput input, CallbackInfo ci) {
+        BannerGlowComponent component = input.get(GlowBannersDataComponents.BANNER_GLOW);
+        if (component == null)
+            return;
+        GlowBannersMod.getHelper().setData((BannerBlockEntity)(Object)this, component);
+        this.setChanged();
     }
 
-    @ModifyReturnValue(method = "getItem", at = @At("RETURN"))
-    private ItemStack glowBanners$setGlowDataGetStack(ItemStack original) {
-        BannerGlowAttachment prevData = IGlowBannersPlatformHelper.INSTANCE.getData((BannerBlockEntity)(Object)this);
-        if (prevData != null) {
-            BannerGlowAttachment glowData = IGlowBannersPlatformHelper.INSTANCE.getData(original);
-            if (glowData != null) {
-                glowData.setFromOther(prevData);
-            }
-        }
-        return original;
+    @Inject(method = "collectImplicitComponents", at = @At("TAIL"))
+    private void glowBanners$applyGlowComponent(DataComponentMap.Builder builder, CallbackInfo ci) {
+        BannerGlowComponent attachment = GlowBannersMod.getHelper().getData((BannerBlockEntity)(Object)this);
+        if (attachment == null)
+            return;
+        builder.set(GlowBannersDataComponents.BANNER_GLOW, attachment);
     }
 }

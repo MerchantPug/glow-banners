@@ -1,21 +1,18 @@
 [versions]
-minecraft = "1.20.4"
-autoservice = "1.0.1"
-findbugs = "3.0.1"
+minecraft = "1.20.6"
 
 mixin = "0.8.5"
 mixin_extras = "0.3.5"
 
-fabric_loader = "0.15.7"
-fabric_api = "0.96.4+1.20.4"
+fabric_loader = "0.15.10"
+fabric_api = "0.97.8+1.20.6"
 
-neoforge = "20.4.184"
-neoforge_loaderrange = "[2,)"
-neoforge_minecraftrange = "[1.20.4,)"
+neoforge = "20.6.11-beta"
+neoforge_loader_range = "[3,)"
+neoforge_minecraft_range = "[1.20.6,)"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-findbugs = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugs"}
 
 mixin = { module = "org.spongepowered:mixin", version.ref = "mixin"}
 mixin_extras_common = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixin_extras"}
@@ -24,7 +21,6 @@ fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_l
 fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric_api" }
 
 neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
-autoservice = { module = "com.google.auto.service:auto-service", version.ref = "autoservice" }
 
 [bundles]
 

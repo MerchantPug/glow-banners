@@ -1,11 +1,15 @@
 package me.ultrusmods.glowingbanners;
 
-import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
+import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
 import me.ultrusmods.glowingbanners.mixin.AbstractCauldronBlockAccessor;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
+import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -30,7 +34,18 @@ public class GlowBannersMod {
     public static final String MOD_NAME = "Glow Banners";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
 
-    public static BannerGlowAttachment BANNER_RENDERER_CONTEXT;
+    public static BannerGlowComponent BANNER_RENDERER_CONTEXT;
+    private static IGlowBannersPlatformHelper helper;
+
+    public static void setHelper(IGlowBannersPlatformHelper helper) {
+        if (GlowBannersMod.helper != null)
+            throw new IllegalStateException("Cannot set GlowBannersPlatformHelper to something new after it is already set");
+        GlowBannersMod.helper = helper;
+    }
+
+    public static IGlowBannersPlatformHelper getHelper() {
+        return helper;
+    }
 
     public static InteractionResult interactWithBlock(Player player, Level level, InteractionHand hand, BlockHitResult result) {
         BlockPos pos = result.getBlockPos();
@@ -54,33 +69,32 @@ public class GlowBannersMod {
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof BannerBlockEntity bannerBlockEntity) {
-            BannerGlowAttachment data = IGlowBannersPlatformHelper.INSTANCE.getData(bannerBlockEntity);
+            BannerGlowComponent data = GlowBannersMod.getHelper().getOrCreateData(bannerBlockEntity);
 
-            if (data != null) {
-                if (level.isClientSide()) {
-                    return ((hasGlowInkSac && !data.shouldAllGlow() || hasInkSac && (data.shouldAllGlow() || !data.getGlowingLayers().isEmpty())) && player.getAbilities().mayBuild) ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
-                } else {
-                    if (!hasGlowInkSac && !hasInkSac) {
-                        return InteractionResult.PASS;
-                    }
-                    if (hasGlowInkSac && data.shouldAllGlow() || hasInkSac && !data.shouldAllGlow() && data.getGlowingLayers().isEmpty()) {
-                        return InteractionResult.PASS;
-                    }
-                    level.playSound(null, result.getBlockPos(), hasInkSac ? SoundEvents.INK_SAC_USE : SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
-
-                    if (player instanceof ServerPlayer) {
-                        CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, pos, heldStack);
-                    }
-
-                    data.clearGlowingLayers();
-                    data.setAllGlow(hasGlowInkSac);
-                    IGlowBannersPlatformHelper.INSTANCE.syncBlockEntity(bannerBlockEntity);
-
-                    if (!player.getAbilities().instabuild) {
-                        heldStack.shrink(1);
-                    }
-                    return InteractionResult.SUCCESS;
+            if (level.isClientSide()) {
+                return ((hasGlowInkSac && !data.shouldAllGlow() || hasInkSac && (data.shouldAllGlow() || !data.getGlowingLayers().isEmpty())) && player.getAbilities().mayBuild) ? InteractionResult.SUCCESS : InteractionResult.CONSUME;
+            } else {
+                if (!hasGlowInkSac && !hasInkSac) {
+                    return InteractionResult.PASS;
                 }
+                if (hasGlowInkSac && data.shouldAllGlow() || hasInkSac && !data.shouldAllGlow() && data.getGlowingLayers().isEmpty()) {
+                    return InteractionResult.PASS;
+                }
+                level.playSound(null, result.getBlockPos(), hasInkSac ? SoundEvents.INK_SAC_USE : SoundEvents.GLOW_INK_SAC_USE, SoundSource.BLOCKS, 1.0F, 1.0F);
+
+                if (player instanceof ServerPlayer) {
+                    CriteriaTriggers.ITEM_USED_ON_BLOCK.trigger((ServerPlayer) player, pos, heldStack);
+                }
+
+                data.clearGlowingLayers();
+                data.setAllGlow(hasGlowInkSac);
+                GlowBannersMod.getHelper().syncBlockEntity(bannerBlockEntity);
+                bannerBlockEntity.setChanged();
+
+                if (!player.getAbilities().instabuild) {
+                    heldStack.shrink(1);
+                }
+                return InteractionResult.SUCCESS;
             }
         }
 
@@ -92,31 +106,31 @@ public class GlowBannersMod {
         ItemStack stack = player.getItemInHand(hand);
         BlockPos pos = result.getBlockPos();
 
-        BannerGlowAttachment data = IGlowBannersPlatformHelper.INSTANCE.getData(stack);
+        BannerGlowComponent data = stack.get(GlowBannersDataComponents.BANNER_GLOW);
         if (stack.getItem() instanceof BannerItem && data != null) {
-            ItemStack itemStack = stack.copy();
-            BannerGlowAttachment copiedData = IGlowBannersPlatformHelper.INSTANCE.getData(itemStack);
+            ItemStack copied = stack.copy();
+            BannerGlowComponent copiedData = copied.get(GlowBannersDataComponents.BANNER_GLOW);
 
             boolean updated = false;
             if (level.isClientSide()) {
-                updated = copiedData.shouldAllGlow() || BannerBlockEntity.getItemPatterns(itemStack) != null && copiedData.isLayerGlowing(BannerBlockEntity.getItemPatterns(itemStack).size());
+                updated = copiedData.shouldAllGlow() || copied.get(DataComponents.BANNER_PATTERNS) != null && copiedData.isLayerGlowing(stack.get(DataComponents.BANNER_PATTERNS).layers().size());
 
                 if (updated)
                     return InteractionResult.SUCCESS;
             } else {
-                itemStack.setCount(1);
+                copied.setCount(1);
 
                 if (copiedData.shouldAllGlow()) {
                     copiedData.setAllGlow(false);
-                    BannerBlockEntity.removeLastPattern(itemStack);
-                    int lastLayer = BannerBlockEntity.getItemPatterns(itemStack) == null ? 0 : BannerBlockEntity.getItemPatterns(itemStack).size();
+                    copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                    int lastLayer = copied.get(DataComponents.BANNER_PATTERNS) == null ? 0 : copied.get(DataComponents.BANNER_PATTERNS).layers().size();
                     copiedData.removeGlowFromLayer(lastLayer);
                     updated = true;
-                } else if (BannerBlockEntity.getItemPatterns(itemStack) != null) {
-                    int lastLayer = BannerBlockEntity.getItemPatterns(itemStack).size();
+                } else if (copied.get(DataComponents.BANNER_PATTERNS) != null) {
+                    int lastLayer = copied.get(DataComponents.BANNER_PATTERNS).layers().size();
                     if (copiedData.isLayerGlowing(lastLayer)) {
                         copiedData.removeGlowFromLayer(lastLayer);
-                        BannerBlockEntity.removeLastPattern(itemStack);
+                        copied.get(DataComponents.BANNER_PATTERNS).removeLast();
                         updated = true;
                     }
                 }
@@ -127,11 +141,11 @@ public class GlowBannersMod {
                     }
 
                     if (stack.isEmpty()) {
-                        player.setItemInHand(hand, itemStack);
-                    } else if (player.getInventory().add(itemStack)) {
+                        player.setItemInHand(hand, copied);
+                    } else if (player.getInventory().add(copied)) {
                         player.containerMenu.broadcastChanges();
                     } else {
-                        player.drop(itemStack, false);
+                        player.drop(copied, false);
                     }
 
                     LayeredCauldronBlock.lowerFillLevel(level.getBlockState(pos), level, pos);

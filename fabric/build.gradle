@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom'
+    id 'fabric-loom' version '1.6-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -21,6 +21,10 @@ repositories {
 
 
 loom {
+    def aw = project(":common").file("src/main/resources/${mod_id}.accesswidener")
+    if(aw.exists()){
+        accessWidenerPath = aw
+    }
     mixin.defaultRefmapName = "${mod_id}.refmap.json"
 
     runs {
@@ -47,10 +51,6 @@ dependencies {
     modImplementation libs.fabric.api
 
     compileOnly project(":common")
-
-    compileOnly libs.autoservice
-    annotationProcessor libs.autoservice
-
 }
 
 processResources {

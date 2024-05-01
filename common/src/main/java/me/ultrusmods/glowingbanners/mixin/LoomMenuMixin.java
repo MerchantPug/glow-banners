@@ -1,9 +1,10 @@
 package me.ultrusmods.glowingbanners.mixin;
 
 import com.google.common.collect.ImmutableList;
-import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
-import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
+import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
+import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -11,10 +12,8 @@ import net.minecraft.world.inventory.DataSlot;
 import net.minecraft.world.inventory.LoomMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BannerPattern;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -55,26 +54,27 @@ public abstract class LoomMenuMixin extends AbstractContainerMenu {
             this.selectablePatterns = ImmutableList.of();
             this.selectedBannerPatternIndex.set(-1);
             ItemStack result = this.bannerSlot.getItem().copy();
-            int lastLayer = BannerBlockEntity.getItemPatterns(result) == null ? 0 : BannerBlockEntity.getItemPatterns(result).size();
+            int lastLayer = result.get(DataComponents.BANNER_PATTERNS) == null ? 0 : result.get(DataComponents.BANNER_PATTERNS).layers().size();
 
-            boolean isOriginalLastLayerGlowing = IGlowBannersPlatformHelper.INSTANCE.getData(banner).shouldAllGlow() || IGlowBannersPlatformHelper.INSTANCE.getData(banner).isLayerGlowing(lastLayer);
+            BannerGlowComponent component = result.getOrDefault(GlowBannersDataComponents.BANNER_GLOW, new BannerGlowComponent());
+            boolean isOriginalLastLayerGlowing = component.shouldAllGlow() || component.isLayerGlowing(lastLayer);
             if (hasGlowInkSac && isOriginalLastLayerGlowing || hasInkSac && !isOriginalLastLayerGlowing) {
                 ci.cancel();
                 return;
             }
 
-            BannerGlowAttachment resultData = IGlowBannersPlatformHelper.INSTANCE.getData(result);
             if (hasGlowInkSac)
-                resultData.addGlowToLayer(lastLayer);
-            else if (resultData.shouldAllGlow()) {
-                resultData.setAllGlow(false);
-                resultData.clearGlowingLayers();
+                component.addGlowToLayer(lastLayer);
+            else if (component.shouldAllGlow()) {
+                component.setAllGlow(false);
+                component.clearGlowingLayers();
                 for (int i = 0; i < Math.max(lastLayer - 1, 0); ++i) {
-                    resultData.addGlowToLayer(i);
+                    component.addGlowToLayer(i);
                 }
             } else
-                resultData.removeGlowFromLayer(lastLayer);
+                component.removeGlowFromLayer(lastLayer);
 
+            result.set(GlowBannersDataComponents.BANNER_GLOW, component);
             this.resultSlot.set(result);
 
             this.broadcastChanges();

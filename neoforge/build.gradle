@@ -2,10 +2,16 @@ import org.apache.tools.ant.filters.LineContains
 
 plugins {
     id 'idea'
-    id 'net.neoforged.gradle.userdev' version '7.0.63'
+    id 'net.neoforged.gradle.userdev' version '7.0.115'
     id 'maven-publish'
     id 'java-library'
 }
+
+def at = file("src/main/resources/${mod_id}.cfg");
+if (at.exists()) {
+    minecraft.accessTransformers.file(at)
+}
+
 base {
     archivesName = "${archives_base_name}-neoforge"
 }
@@ -13,12 +19,11 @@ base {
 runs {
     configureEach {
         modSource project.sourceSets.main
+        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
     }
     client {
-        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
     }
     server {
-        systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
         programArgument '--nogui'
     }
 }
@@ -28,9 +33,6 @@ sourceSets.main.resources { srcDir 'src/generated/resources' }
 dependencies {
     implementation libs.neoforge
     compileOnly project(":common")
-
-    compileOnly libs.autoservice
-    annotationProcessor libs.autoservice
 }
 
 // NeoGradle compiles the game, but we don't want to add our common code to the game's code
@@ -53,6 +55,7 @@ tasks.named("sourcesJar", Jar) {
 tasks.withType(ProcessResources).excludingNeoTasks().configureEach {
     from project(":common").sourceSets.main.resources
 
+    exclude("glowingbanners.accesswidener")
     filesMatching("*.mixins.json") {
         filter(LineContains, negate: true, contains: [ 'refmap' ] )
     }

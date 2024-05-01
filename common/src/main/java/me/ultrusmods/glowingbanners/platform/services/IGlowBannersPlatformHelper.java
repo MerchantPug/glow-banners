@@ -1,15 +1,16 @@
 package me.ultrusmods.glowingbanners.platform.services;
 
-import me.ultrusmods.glowingbanners.attachment.BannerGlowAttachment;
-import me.ultrusmods.glowingbanners.platform.ServiceUtil;
-import net.minecraft.world.item.ItemStack;
+import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import org.jetbrains.annotations.Nullable;
 
 public interface IGlowBannersPlatformHelper {
-    IGlowBannersPlatformHelper INSTANCE = ServiceUtil.load(IGlowBannersPlatformHelper.class);
+    @Nullable
+    BannerGlowComponent getData(BannerBlockEntity blockEntity);
 
-    String getAttachmentsTagKey();
-    BannerGlowAttachment getData(BannerBlockEntity blockEntity);
+    BannerGlowComponent getOrCreateData(BannerBlockEntity blockEntity);
+
+    BannerGlowComponent setData(BannerBlockEntity blockEntity, BannerGlowComponent component);
+
     void syncBlockEntity(BannerBlockEntity blockEntity);
-    BannerGlowAttachment getData(ItemStack stack);
 }
