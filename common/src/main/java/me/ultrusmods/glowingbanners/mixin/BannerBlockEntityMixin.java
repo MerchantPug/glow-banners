@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @Mixin(BannerBlockEntity.class)
 public class BannerBlockEntityMixin extends BlockEntity {
     public BannerBlockEntityMixin(BlockEntityType<?> entityType, BlockPos pos, BlockState state) {
@@ -27,19 +29,21 @@ public class BannerBlockEntityMixin extends BlockEntity {
     private void glowBanners$convertGlowingNbt(CompoundTag tag, HolderLookup.Provider provider, CallbackInfo ci) {
         if (tag.contains("isGlowing", Tag.TAG_BYTE) && tag.getBoolean("isGlowing")) {
             tag.remove("isGlowing");
-            BannerGlowComponent component = GlowBannersMod.getHelper().getOrCreateData((BannerBlockEntity)(Object)this);
-            component.setAllGlow(true);
-            this.setChanged();
+            GlowBannersMod.getHelper().setData((BannerBlockEntity)(Object)this, new BannerGlowComponent(true, List.of()));
         }
     }
 
     @Inject(method = "applyImplicitComponents", at = @At("TAIL"))
     private void glowBanners$applyGlowComponent(DataComponentInput input, CallbackInfo ci) {
         BannerGlowComponent component = input.get(GlowBannersDataComponents.BANNER_GLOW);
-        if (component == null)
+        if (component == null) {
+            GlowBannersMod.getHelper().removeData((BannerBlockEntity)(Object)this);
             return;
+        }
         GlowBannersMod.getHelper().setData((BannerBlockEntity)(Object)this, component);
-        this.setChanged();
+        if (level == null || level.isClientSide())
+            return;
+        GlowBannersMod.getHelper().syncBlockEntity((BannerBlockEntity)(Object)this);
     }
 
     @Inject(method = "collectImplicitComponents", at = @At("TAIL"))

@@ -12,5 +12,7 @@ public interface IGlowBannersPlatformHelper {
 
     BannerGlowComponent setData(BannerBlockEntity blockEntity, BannerGlowComponent component);
 
+    BannerGlowComponent removeData(BannerBlockEntity blockEntity);
+
     void syncBlockEntity(BannerBlockEntity blockEntity);
 }

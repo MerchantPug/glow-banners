@@ -1,5 +1,6 @@
 package me.ultrusmods.glowingbanners.component;
 
+import com.google.common.base.Objects;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
@@ -15,7 +16,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class BannerGlowComponent {
-    public static final BannerGlowComponent EMPTY = new BannerGlowComponent();
     public static final ResourceLocation ID = GlowBannersMod.asResource("banner_glow");
     public static final Codec<BannerGlowComponent> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             Codec.BOOL.optionalFieldOf("all_glow", false).forGetter(BannerGlowComponent::shouldAllGlow),
@@ -61,5 +61,17 @@ public class BannerGlowComponent {
 
     public Collection<Integer> getGlowingLayers() {
         return Collections.unmodifiableCollection(glowingLayers);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof BannerGlowComponent other))
+            return false;
+        return other.allGlow == allGlow && other.glowingLayers.equals(glowingLayers);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(allGlow, glowingLayers);
     }
 }

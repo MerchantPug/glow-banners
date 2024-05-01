@@ -28,8 +28,14 @@ public class NeoForgeGlowBannersPlatformHelper implements IGlowBannersPlatformHe
     }
 
     @Override
+    public BannerGlowComponent removeData(net.minecraft.world.level.block.entity.BannerBlockEntity blockEntity) {
+        return blockEntity.removeData(GlowBannersAttachmentTypes.BANNER_GLOW);
+    }
+
+    @Override
     public void syncBlockEntity(BannerBlockEntity blockEntity) {
         PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) blockEntity.getLevel(), blockEntity.getLevel().getChunkAt(blockEntity.getBlockPos()).getPos(), new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW)));
         blockEntity.invalidateCapabilities();
     }
+
 }
