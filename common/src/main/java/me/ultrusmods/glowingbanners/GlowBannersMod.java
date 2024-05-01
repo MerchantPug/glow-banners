@@ -140,7 +140,7 @@ public class GlowBannersMod {
                         copiedData.removeGlowFromLayer(lastLayer);
                         if (lastLayer > 0)
                             copied.get(DataComponents.BANNER_PATTERNS).removeLast();
-                        else
+                        if (copiedData.isEmpty())
                             copied.remove(GlowBannersDataComponents.BANNER_GLOW);
                         updated = true;
                     }
