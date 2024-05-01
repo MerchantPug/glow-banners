@@ -127,14 +127,15 @@ public class GlowBannersMod {
                 if (copiedData.shouldAllGlow()) {
                     copiedData.setAllGlow(false);
                     copied.get(DataComponents.BANNER_PATTERNS).removeLast();
-                    int lastLayer = copied.get(DataComponents.BANNER_PATTERNS) == null ? 0 : copied.get(DataComponents.BANNER_PATTERNS).layers().size();
+                    int lastLayer = copied.get(DataComponents.BANNER_PATTERNS).layers().isEmpty() ? 0 : copied.get(DataComponents.BANNER_PATTERNS).layers().size();
                     copiedData.removeGlowFromLayer(lastLayer);
                     updated = true;
-                } else if (copied.get(DataComponents.BANNER_PATTERNS) != null) {
+                } else {
                     int lastLayer = copied.get(DataComponents.BANNER_PATTERNS).layers().size();
                     if (copiedData.isLayerGlowing(lastLayer)) {
                         copiedData.removeGlowFromLayer(lastLayer);
-                        copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                        if (!copied.get(DataComponents.BANNER_PATTERNS).layers().isEmpty())
+                            copied.get(DataComponents.BANNER_PATTERNS).removeLast();
                         updated = true;
                     }
                 }
