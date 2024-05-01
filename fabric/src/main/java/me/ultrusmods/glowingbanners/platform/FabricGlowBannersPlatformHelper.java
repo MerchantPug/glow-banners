@@ -7,13 +7,13 @@ import me.ultrusmods.glowingbanners.registry.GlowBannersAttachmentTypes;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class FabricGlowBannersPlatformHelper implements IGlowBannersPlatformHelper {
 
     @Nullable
-    public BannerGlowComponent getData(BannerBlockEntity blockEntity) {
+    public BannerGlowComponent getData(BlockEntity blockEntity) {
         if (blockEntity == null) {
             return null;
         }
@@ -21,22 +21,27 @@ public class FabricGlowBannersPlatformHelper implements IGlowBannersPlatformHelp
     }
 
     @Override
-    public BannerGlowComponent getOrCreateData(BannerBlockEntity blockEntity) {
+    public BannerGlowComponent getOrCreateData(BlockEntity blockEntity) {
         return blockEntity.getAttachedOrCreate(GlowBannersAttachmentTypes.BANNER_GLOW);
     }
 
     @Override
-    public BannerGlowComponent setData(BannerBlockEntity blockEntity, BannerGlowComponent component) {
+    public boolean hasData(BlockEntity blockEntity) {
+        return blockEntity.hasAttached(GlowBannersAttachmentTypes.BANNER_GLOW);
+    }
+
+    @Override
+    public BannerGlowComponent setData(BlockEntity blockEntity, BannerGlowComponent component) {
         return blockEntity.setAttached(GlowBannersAttachmentTypes.BANNER_GLOW, component);
     }
 
     @Override
-    public BannerGlowComponent removeData(BannerBlockEntity blockEntity) {
+    public BannerGlowComponent removeData(BlockEntity blockEntity) {
         return blockEntity.removeAttached(GlowBannersAttachmentTypes.BANNER_GLOW);
     }
 
-    public void syncBlockEntity(BannerBlockEntity blockEntity) {
-        if (!blockEntity.hasAttached(GlowBannersAttachmentTypes.BANNER_GLOW)) return;
+    public void syncBlockEntity(BlockEntity blockEntity) {
+        if (!hasData(blockEntity)) return;
         for (ServerPlayer player : PlayerLookup.tracking(blockEntity)) {
             ServerPlayNetworking.send(player, new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getAttached(GlowBannersAttachmentTypes.BANNER_GLOW)));
         }

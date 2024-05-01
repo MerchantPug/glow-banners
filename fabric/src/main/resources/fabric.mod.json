@@ -30,7 +30,8 @@
     ]
   },
   "mixins": [
-    "glowingbanners.mixins.json"
+    "glowingbanners.mixins.json",
+    "glowingbanners.fabric.mixins.json"
   ],
   "accessWidener" : "glowingbanners.accesswidener",
   "depends": {

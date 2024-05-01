@@ -9,7 +9,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 public record SyncBannerGlowS2CPacket(BlockPos pos, BannerGlowComponent attachment) implements CustomPacketPayload {
@@ -28,10 +27,10 @@ public record SyncBannerGlowS2CPacket(BlockPos pos, BannerGlowComponent attachme
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             BlockEntity blockEntity = Minecraft.getInstance().level.getBlockEntity(this.pos());
-            if (!(blockEntity instanceof BannerBlockEntity banner)) {
+            if ((blockEntity == null)) {
                 return;
             }
-            GlowBannersMod.getHelper().setData(banner, attachment);
+            GlowBannersMod.getHelper().setData(blockEntity, attachment);
         });
     }
 

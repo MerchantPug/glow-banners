@@ -5,13 +5,11 @@ import me.ultrusmods.glowingbanners.network.s2c.SyncBannerGlowS2CPacket;
 import me.ultrusmods.glowingbanners.platform.FabricGlowBannersPlatformHelper;
 import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerBlockEntityEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
 
 public class GlowBannersModFabric implements ModInitializer {
     @Override
@@ -30,11 +28,6 @@ public class GlowBannersModFabric implements ModInitializer {
                     pool.apply(new SetBannerGlowFunction.Builder().build());
                 });
             }
-        });
-
-        ServerBlockEntityEvents.BLOCK_ENTITY_LOAD.register((blockEntity, world) -> {
-            if (blockEntity instanceof BannerBlockEntity banner)
-                GlowBannersMod.getHelper().syncBlockEntity(banner);
         });
 
         UseBlockCallback.EVENT.register(GlowBannersMod::interactWithBlock);

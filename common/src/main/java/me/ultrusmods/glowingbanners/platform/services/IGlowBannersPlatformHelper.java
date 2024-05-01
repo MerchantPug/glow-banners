@@ -1,18 +1,20 @@
 package me.ultrusmods.glowingbanners.platform.services;
 
 import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
-import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public interface IGlowBannersPlatformHelper {
     @Nullable
-    BannerGlowComponent getData(BannerBlockEntity blockEntity);
+    BannerGlowComponent getData(BlockEntity blockEntity);
 
-    BannerGlowComponent getOrCreateData(BannerBlockEntity blockEntity);
+    BannerGlowComponent getOrCreateData(BlockEntity blockEntity);
 
-    BannerGlowComponent setData(BannerBlockEntity blockEntity, BannerGlowComponent component);
+    boolean hasData(BlockEntity blockEntity);
 
-    BannerGlowComponent removeData(BannerBlockEntity blockEntity);
+    BannerGlowComponent setData(BlockEntity blockEntity, BannerGlowComponent component);
 
-    void syncBlockEntity(BannerBlockEntity blockEntity);
+    BannerGlowComponent removeData(BlockEntity blockEntity);
+
+    void syncBlockEntity(BlockEntity blockEntity);
 }
