@@ -23,6 +23,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.entity.BannerBlockEntity;
+import net.minecraft.world.level.block.entity.BannerPatternLayers;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -129,17 +130,20 @@ public class GlowBannersMod {
                     for (int i = 0; i < lastLayer; ++i) {
                         copiedData.addGlowToLayer(i);
                     }
-                    if (lastLayer > 0)
-                        copied.get(DataComponents.BANNER_PATTERNS).removeLast();
-                    else
+                    if (lastLayer > 0) {
+                        BannerPatternLayers layers = copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                        copied.set(DataComponents.BANNER_PATTERNS, layers);
+                    } else
                         copied.remove(GlowBannersDataComponents.BANNER_GLOW);
                     updated = true;
                 } else {
                     int lastLayer = copied.get(DataComponents.BANNER_PATTERNS).layers().size();
                     if (copiedData.isLayerGlowing(lastLayer)) {
                         copiedData.removeGlowFromLayer(lastLayer);
-                        if (lastLayer > 0)
-                            copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                        if (lastLayer > 0) {
+                            BannerPatternLayers layers = copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                            copied.set(DataComponents.BANNER_PATTERNS, layers);
+                        }
                         if (copiedData.isEmpty())
                             copied.remove(GlowBannersDataComponents.BANNER_GLOW);
                         updated = true;
