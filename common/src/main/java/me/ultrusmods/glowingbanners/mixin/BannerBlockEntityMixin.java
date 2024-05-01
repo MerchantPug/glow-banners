@@ -36,20 +36,17 @@ public class BannerBlockEntityMixin extends BlockEntity {
     @Inject(method = "applyImplicitComponents", at = @At("TAIL"))
     private void glowBanners$applyGlowComponent(DataComponentInput input, CallbackInfo ci) {
         BannerGlowComponent component = input.get(GlowBannersDataComponents.BANNER_GLOW);
-        if (component == null) {
+        if (component == null || component.isEmpty()) {
             GlowBannersMod.getHelper().removeData((BannerBlockEntity)(Object)this);
             return;
         }
         GlowBannersMod.getHelper().setData((BannerBlockEntity)(Object)this, component);
-        if (level == null || level.isClientSide())
-            return;
-        GlowBannersMod.getHelper().syncBlockEntity((BannerBlockEntity)(Object)this);
     }
 
     @Inject(method = "collectImplicitComponents", at = @At("TAIL"))
     private void glowBanners$applyGlowComponent(DataComponentMap.Builder builder, CallbackInfo ci) {
         BannerGlowComponent attachment = GlowBannersMod.getHelper().getData((BannerBlockEntity)(Object)this);
-        if (attachment == null)
+        if (attachment == null || attachment.isEmpty())
             return;
         builder.set(GlowBannersDataComponents.BANNER_GLOW, attachment);
     }

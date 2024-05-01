@@ -3,6 +3,7 @@ package me.ultrusmods.glowingbanners;
 import me.ultrusmods.glowingbanners.loot.SetBannerGlowFunction;
 import me.ultrusmods.glowingbanners.network.s2c.SyncBannerGlowS2CPacket;
 import me.ultrusmods.glowingbanners.platform.FabricGlowBannersPlatformHelper;
+import me.ultrusmods.glowingbanners.registry.GlowBannersAttachmentTypes;
 import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -15,6 +16,7 @@ public class GlowBannersModFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         GlowBannersMod.setHelper(new FabricGlowBannersPlatformHelper());
+        GlowBannersAttachmentTypes.init();
         GlowBannersDataComponents.registerAll(Registry::register);
         Registry.register(BuiltInRegistries.LOOT_FUNCTION_TYPE, SetBannerGlowFunction.ID, SetBannerGlowFunction.TYPE);
         PayloadTypeRegistry.playS2C().register(SyncBannerGlowS2CPacket.TYPE, SyncBannerGlowS2CPacket.STREAM_CODEC);

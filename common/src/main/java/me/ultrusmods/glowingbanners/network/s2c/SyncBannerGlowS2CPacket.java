@@ -1,5 +1,6 @@
 package me.ultrusmods.glowingbanners.network.s2c;
 
+import com.mojang.datafixers.util.Pair;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
 import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
 import net.minecraft.client.Minecraft;
@@ -11,17 +12,20 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public record SyncBannerGlowS2CPacket(BlockPos pos, BannerGlowComponent attachment) implements CustomPacketPayload {
+import java.util.Optional;
+
+public record SyncBannerGlowS2CPacket(BlockPos pos, Optional<BannerGlowComponent> attachment) implements CustomPacketPayload {
     public static final Type<SyncBannerGlowS2CPacket> TYPE = new Type<>(GlowBannersMod.asResource("sync_banner_glow"));
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncBannerGlowS2CPacket> STREAM_CODEC = StreamCodec.of(SyncBannerGlowS2CPacket::write, SyncBannerGlowS2CPacket::new);
 
     public SyncBannerGlowS2CPacket(FriendlyByteBuf buf) {
-        this(buf.readBlockPos(), BannerGlowComponent.CODEC.decode(NbtOps.INSTANCE, buf.readNbt()).getOrThrow().getFirst());
+        this(buf.readBlockPos(), !buf.readBoolean() ? Optional.empty() : BannerGlowComponent.CODEC.decode(NbtOps.INSTANCE, buf.readNbt()).result().map(Pair::getFirst));
     }
 
     public static void write(FriendlyByteBuf buf, SyncBannerGlowS2CPacket packet) {
         buf.writeBlockPos(packet.pos);
-        buf.writeNbt(BannerGlowComponent.CODEC.encodeStart(NbtOps.INSTANCE, packet.attachment).getOrThrow());
+        buf.writeBoolean(packet.attachment.isPresent());
+        packet.attachment.ifPresent(component -> buf.writeNbt(BannerGlowComponent.CODEC.encodeStart(NbtOps.INSTANCE, component).getOrThrow()));
     }
 
     public void handle() {
@@ -30,7 +34,10 @@ public record SyncBannerGlowS2CPacket(BlockPos pos, BannerGlowComponent attachme
             if ((blockEntity == null)) {
                 return;
             }
-            GlowBannersMod.getHelper().setData(blockEntity, attachment);
+            if (attachment.isEmpty())
+                GlowBannersMod.getHelper().removeData(blockEntity);
+            else
+                GlowBannersMod.getHelper().setData(blockEntity, attachment.get());
         });
     }
 

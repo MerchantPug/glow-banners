@@ -13,12 +13,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
+
 @Mixin(PlayerChunkSender.class)
 public class PlayerChunkSenderMixin {
     @Inject(method = "sendChunk", at = @At("TAIL"))
     private static void glowBanners$sendBannerGlow(ServerGamePacketListenerImpl listener, ServerLevel level, LevelChunk chunk, CallbackInfo ci) {
         for (BlockEntity blockEntity : chunk.getBlockEntities().values().stream().filter(blockEntity -> blockEntity.hasAttached(GlowBannersAttachmentTypes.BANNER_GLOW)).toList()) {
-            ServerPlayNetworking.send(listener.player, new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getAttached(GlowBannersAttachmentTypes.BANNER_GLOW)));
+            ServerPlayNetworking.send(listener.player, new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), Optional.ofNullable(blockEntity.getAttached(GlowBannersAttachmentTypes.BANNER_GLOW))));
         }
     }
 }

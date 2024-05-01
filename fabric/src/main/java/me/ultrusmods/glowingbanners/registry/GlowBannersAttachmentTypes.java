@@ -9,4 +9,6 @@ public class GlowBannersAttachmentTypes {
             .persistent(BannerGlowComponent.CODEC)
             .initializer(BannerGlowComponent::new)
             .buildAndRegister(BannerGlowComponent.ID);
+
+    public static void init() {}
 }

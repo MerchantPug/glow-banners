@@ -16,6 +16,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class BannerGlowComponent {
+    public static final BannerGlowComponent EMPTY = new BannerGlowComponent();
     public static final ResourceLocation ID = GlowBannersMod.asResource("banner_glow");
     public static final Codec<BannerGlowComponent> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             Codec.BOOL.optionalFieldOf("all_glow", false).forGetter(BannerGlowComponent::shouldAllGlow),
@@ -61,6 +62,10 @@ public class BannerGlowComponent {
 
     public Collection<Integer> getGlowingLayers() {
         return Collections.unmodifiableCollection(glowingLayers);
+    }
+
+    public boolean isEmpty() {
+        return this.equals(EMPTY);
     }
 
     @Override

@@ -74,7 +74,10 @@ public abstract class LoomMenuMixin extends AbstractContainerMenu {
             } else
                 component.removeGlowFromLayer(lastLayer);
 
-            result.set(GlowBannersDataComponents.BANNER_GLOW, component);
+            if (!component.isEmpty())
+                result.set(GlowBannersDataComponents.BANNER_GLOW, component);
+            else
+                result.remove(GlowBannersDataComponents.BANNER_GLOW);
             this.resultSlot.set(result);
 
             this.broadcastChanges();

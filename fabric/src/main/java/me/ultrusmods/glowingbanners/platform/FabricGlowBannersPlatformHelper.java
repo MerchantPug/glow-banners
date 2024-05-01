@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class FabricGlowBannersPlatformHelper implements IGlowBannersPlatformHelper {
 
     @Nullable
@@ -41,9 +43,8 @@ public class FabricGlowBannersPlatformHelper implements IGlowBannersPlatformHelp
     }
 
     public void syncBlockEntity(BlockEntity blockEntity) {
-        if (!hasData(blockEntity)) return;
         for (ServerPlayer player : PlayerLookup.tracking(blockEntity)) {
-            ServerPlayNetworking.send(player, new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getAttached(GlowBannersAttachmentTypes.BANNER_GLOW)));
+            ServerPlayNetworking.send(player, new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), Optional.ofNullable(blockEntity.getAttached(GlowBannersAttachmentTypes.BANNER_GLOW))));
         }
     }
 }

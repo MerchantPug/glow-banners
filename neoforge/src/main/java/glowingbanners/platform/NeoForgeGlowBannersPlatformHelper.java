@@ -9,6 +9,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 public class NeoForgeGlowBannersPlatformHelper implements IGlowBannersPlatformHelper {
     @Nullable
     @Override
@@ -38,8 +40,7 @@ public class NeoForgeGlowBannersPlatformHelper implements IGlowBannersPlatformHe
 
     @Override
     public void syncBlockEntity(BlockEntity blockEntity) {
-        if (!hasData(blockEntity)) return;
-        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) blockEntity.getLevel(), blockEntity.getLevel().getChunkAt(blockEntity.getBlockPos()).getPos(), new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW)));
+        PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) blockEntity.getLevel(), blockEntity.getLevel().getChunkAt(blockEntity.getBlockPos()).getPos(), new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), Optional.ofNullable(blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW))));
         blockEntity.invalidateCapabilities();
     }
 

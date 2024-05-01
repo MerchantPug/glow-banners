@@ -88,6 +88,10 @@ public class GlowBannersMod {
 
                 data.clearGlowingLayers();
                 data.setAllGlow(hasGlowInkSac);
+
+                if (data.isEmpty())
+                    GlowBannersMod.getHelper().removeData(blockEntity);
+
                 GlowBannersMod.getHelper().syncBlockEntity(bannerBlockEntity);
                 bannerBlockEntity.setChanged();
 
