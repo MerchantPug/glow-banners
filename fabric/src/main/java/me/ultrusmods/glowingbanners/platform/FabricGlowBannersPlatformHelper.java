@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class FabricGlowBannersPlatformHelper implements IGlowBannersPlatformHelper {
-
     @Nullable
     public BannerGlowComponent getData(BlockEntity blockEntity) {
         if (blockEntity == null) {

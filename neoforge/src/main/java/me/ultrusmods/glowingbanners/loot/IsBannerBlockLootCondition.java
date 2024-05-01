@@ -1,6 +1,5 @@
-package glowingbanners.loot;
+package me.ultrusmods.glowingbanners.loot;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
 import net.minecraft.core.registries.BuiltInRegistries;

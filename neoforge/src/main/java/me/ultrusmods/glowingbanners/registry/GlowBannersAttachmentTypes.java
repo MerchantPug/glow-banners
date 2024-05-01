@@ -1,4 +1,4 @@
-package glowingbanners.registry;
+package me.ultrusmods.glowingbanners.registry;
 
 import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
 import me.ultrusmods.glowingbanners.registry.RegistrationCallback;

@@ -16,6 +16,8 @@ description = '''This mod adds glowing banners'''
 
 [[mixins]]
 config = "glowingbanners.mixins.json"
+[[mixins]]
+config = "glowingbanners.neoforge.mixins.json"
 
 [[accessTransformers]]
 file="glowingbanners.cfg"

@@ -1,9 +1,7 @@
-package glowingbanners.registry;
+package me.ultrusmods.glowingbanners.registry;
 
-import glowingbanners.loot.IsBannerBlockLootCondition;
-import me.ultrusmods.glowingbanners.registry.RegistrationCallback;
+import me.ultrusmods.glowingbanners.loot.IsBannerBlockLootCondition;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 
 public class GlowBannersLootConditionTypes {

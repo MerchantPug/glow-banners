@@ -1,8 +1,8 @@
-package glowingbanners.loot;
+package me.ultrusmods.glowingbanners.loot;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import glowingbanners.registry.GlowBannersAttachmentTypes;
+import me.ultrusmods.glowingbanners.registry.GlowBannersAttachmentTypes;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import me.ultrusmods.glowingbanners.GlowBannersMod;
 import me.ultrusmods.glowingbanners.component.BannerGlowComponent;

@@ -1,11 +1,10 @@
-package glowingbanners;
+package me.ultrusmods.glowingbanners;
 
-import glowingbanners.platform.NeoForgeGlowBannersPlatformHelper;
-import glowingbanners.registry.GlowBannersAttachmentTypes;
+import me.ultrusmods.glowingbanners.platform.NeoForgeGlowBannersPlatformHelper;
+import me.ultrusmods.glowingbanners.registry.GlowBannersAttachmentTypes;
 import me.ultrusmods.glowingbanners.network.s2c.SyncBannerGlowS2CPacket;
-import glowingbanners.registry.GlowBannersGlobalLootModifierSerializers;
-import glowingbanners.registry.GlowBannersLootConditionTypes;
-import me.ultrusmods.glowingbanners.GlowBannersMod;
+import me.ultrusmods.glowingbanners.registry.GlowBannersGlobalLootModifierSerializers;
+import me.ultrusmods.glowingbanners.registry.GlowBannersLootConditionTypes;
 import me.ultrusmods.glowingbanners.registry.GlowBannersDataComponents;
 import me.ultrusmods.glowingbanners.registry.RegistrationCallback;
 import net.minecraft.core.registries.Registries;

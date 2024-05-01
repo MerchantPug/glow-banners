@@ -1,6 +1,6 @@
-package glowingbanners.platform;
+package me.ultrusmods.glowingbanners.platform;
 
-import glowingbanners.registry.GlowBannersAttachmentTypes;
+import me.ultrusmods.glowingbanners.registry.GlowBannersAttachmentTypes;
 import me.ultrusmods.glowingbanners.component.BannerGlowComponent;
 import me.ultrusmods.glowingbanners.network.s2c.SyncBannerGlowS2CPacket;
 import me.ultrusmods.glowingbanners.platform.services.IGlowBannersPlatformHelper;
@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class NeoForgeGlowBannersPlatformHelper implements IGlowBannersPlatformHelper {
+
     @Nullable
     @Override
     public BannerGlowComponent getData(BlockEntity blockEntity) {
@@ -43,5 +44,4 @@ public class NeoForgeGlowBannersPlatformHelper implements IGlowBannersPlatformHe
         PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) blockEntity.getLevel(), blockEntity.getLevel().getChunkAt(blockEntity.getBlockPos()).getPos(), new SyncBannerGlowS2CPacket(blockEntity.getBlockPos(), Optional.ofNullable(blockEntity.getData(GlowBannersAttachmentTypes.BANNER_GLOW))));
         blockEntity.invalidateCapabilities();
     }
-
 }

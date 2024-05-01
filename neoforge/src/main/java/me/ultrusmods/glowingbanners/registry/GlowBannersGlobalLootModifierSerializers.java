@@ -1,8 +1,7 @@
-package glowingbanners.registry;
+package me.ultrusmods.glowingbanners.registry;
 
 import com.mojang.serialization.MapCodec;
-import glowingbanners.loot.GlowBannerLootModifier;
-import me.ultrusmods.glowingbanners.registry.RegistrationCallback;
+import me.ultrusmods.glowingbanners.loot.GlowBannerLootModifier;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
