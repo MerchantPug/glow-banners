@@ -110,8 +110,7 @@ public class GlowBannersMod {
         ItemStack stack = player.getItemInHand(hand);
         BlockPos pos = result.getBlockPos();
 
-        BannerGlowComponent data = stack.get(GlowBannersDataComponents.BANNER_GLOW);
-        if (stack.getItem() instanceof BannerItem && data != null) {
+        if (stack.getItem() instanceof BannerItem && stack.has(GlowBannersDataComponents.BANNER_GLOW)) {
             ItemStack copied = stack.copy();
             BannerGlowComponent copiedData = copied.get(GlowBannersDataComponents.BANNER_GLOW);
 
@@ -126,15 +125,23 @@ public class GlowBannersMod {
 
                 if (copiedData.shouldAllGlow()) {
                     copiedData.setAllGlow(false);
-                    copied.get(DataComponents.BANNER_PATTERNS).removeLast();
-                    int lastLayer = copied.get(DataComponents.BANNER_PATTERNS) == null ? 0 : copied.get(DataComponents.BANNER_PATTERNS).layers().size();
-                    copiedData.removeGlowFromLayer(lastLayer);
+                    int lastLayer = copied.get(DataComponents.BANNER_PATTERNS).layers().size();
+                    for (int i = 0; i < lastLayer; ++i) {
+                        copiedData.addGlowToLayer(i);
+                    }
+                    if (lastLayer > 0)
+                        copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                    else
+                        copied.remove(GlowBannersDataComponents.BANNER_GLOW);
                     updated = true;
-                } else if (copied.get(DataComponents.BANNER_PATTERNS) != null) {
+                } else {
                     int lastLayer = copied.get(DataComponents.BANNER_PATTERNS).layers().size();
                     if (copiedData.isLayerGlowing(lastLayer)) {
                         copiedData.removeGlowFromLayer(lastLayer);
-                        copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                        if (lastLayer > 0)
+                            copied.get(DataComponents.BANNER_PATTERNS).removeLast();
+                        else
+                            copied.remove(GlowBannersDataComponents.BANNER_GLOW);
                         updated = true;
                     }
                 }
